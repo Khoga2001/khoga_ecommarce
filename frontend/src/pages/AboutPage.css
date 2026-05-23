@@ -1,0 +1,521 @@
+/* AboutPage.css - KHOGA Premium Coffee Brand About Us Styles */
+
+:root {
+  --coffee-darkest: #1e110a;
+  --coffee-dark: #2c1a11;
+  --coffee-medium: #5c3e2e;
+  --coffee-warm: #8c6246;
+  --coffee-light: #c6a488;
+  --coffee-cream: #fbf6f0;
+  --coffee-cream-dark: #eedecf;
+  --coffee-white: #fffbf7;
+  --gold-accent: #d4af37;
+  --font-family: 'Red Hat Display', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+}
+
+/* Page Layout Container */
+.about-page {
+  font-family: var(--font-family);
+  background-color: var(--coffee-white);
+  color: var(--coffee-darkest);
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: 5rem;
+}
+
+/* Breadcrumb Styling */
+.about-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 5%;
+  font-size: 0.875rem;
+  color: var(--coffee-warm);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-breadcrumb a {
+  color: var(--coffee-warm);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.about-breadcrumb a:hover {
+  color: var(--coffee-darkest);
+}
+
+.about-breadcrumb-sep {
+  color: var(--coffee-light);
+}
+
+/* Hero Section with Rich Visuals */
+.about-hero {
+  position: relative;
+  background: radial-gradient(circle at center, var(--coffee-dark) 0%, var(--coffee-darkest) 100%);
+  color: var(--coffee-white);
+  padding: 6rem 5% 7rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.about-hero-noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.04;
+  background-image: radial-gradient(circle at center, #fff 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.about-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-hero-eyebrow {
+  display: inline-block;
+  font-size: 0.875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coffee-light);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.about-hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-hero-title-ar {
+  font-size: 2rem;
+  font-family: 'Cairo', 'Amiri', serif;
+  font-weight: 700;
+  color: var(--coffee-cream-dark);
+  margin-top: 0.25rem;
+  letter-spacing: normal;
+}
+
+/* Hero Divider style */
+.about-hero-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.about-hero-divider-line {
+  height: 1px;
+  width: 80px;
+  background: linear-gradient(90deg, transparent, var(--coffee-light), transparent);
+}
+
+.about-hero-divider-icon {
+  font-size: 1.25rem;
+  animation: float-coffee 3s ease-in-out infinite;
+}
+
+.about-hero-sub {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--coffee-cream);
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 300;
+}
+
+/* Float Animation */
+@keyframes float-coffee {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(5deg);
+  }
+}
+
+/* Team Section & Responsive Grid */
+.about-team-section {
+  max-width: 1200px;
+  margin: -3rem auto 6rem;
+  padding: 0 5%;
+  position: relative;
+  z-index: 3;
+}
+
+.about-team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+}
+
+/* Premium Card Design with Hover Effects */
+.about-team-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(44, 26, 17, 0.05), 0 1px 3px rgba(44, 26, 17, 0.02);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(238, 222, 207, 0.4);
+}
+
+.about-team-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(44, 26, 17, 0.1), 0 1px 5px rgba(44, 26, 17, 0.03);
+}
+
+/* Card Photo Wrap & Zoom */
+.about-card-photo-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 110%; /* Elegant aspect ratio for portraits */
+  overflow: hidden;
+  background-color: var(--coffee-cream);
+}
+
+.about-card-photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-team-card:hover .about-card-photo {
+  transform: scale(1.05);
+}
+
+.about-card-photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 60%, rgba(44, 26, 17, 0.2) 100%);
+  pointer-events: none;
+}
+
+/* Card Body & Info */
+.about-card-body {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.about-card-role-tag {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background-color: var(--coffee-cream);
+  color: var(--coffee-warm);
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--coffee-cream-dark);
+}
+
+.about-card-names {
+  margin-bottom: 1.5rem;
+}
+
+.about-card-name-en {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--coffee-darkest);
+  margin: 0;
+}
+
+.about-card-name-ar {
+  font-family: 'Cairo', 'Amiri', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--coffee-medium);
+  margin: 0.25rem 0 0;
+}
+
+.about-card-role-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--coffee-warm);
+  margin: 0.15rem 0 0;
+}
+
+.about-card-divider {
+  height: 1px;
+  background-color: var(--coffee-cream-dark);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.about-card-bio-en {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 1.5rem;
+}
+
+.about-card-bio-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #444444;
+  margin: 0;
+}
+
+/* Brand Story Section */
+.about-story-section {
+  background-color: var(--coffee-cream);
+  padding: 8rem 5%;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--coffee-cream-dark);
+  border-bottom: 1px solid var(--coffee-cream-dark);
+}
+
+.about-story-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Decorative Beans Background Elements */
+.about-story-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.about-deco-bean {
+  position: absolute;
+  display: block;
+  width: 40px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23eedecf'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm0-4.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.4;
+}
+
+.about-deco-bean--1 {
+  top: -10%;
+  left: 5%;
+  transform: rotate(15deg) scale(1.2);
+}
+
+.about-deco-bean--2 {
+  bottom: 10%;
+  right: 5%;
+  transform: rotate(-30deg) scale(0.9);
+}
+
+.about-deco-bean--3 {
+  top: 60%;
+  left: -8%;
+  transform: rotate(45deg) scale(1.1);
+  opacity: 0.25;
+}
+
+.about-story-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--coffee-white);
+  background-color: var(--coffee-dark);
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  margin-bottom: 2.5rem;
+}
+
+.about-story-quote {
+  margin: 0 0 4rem;
+  padding: 0;
+  border: none;
+}
+
+.about-story-text-en {
+  font-size: 1.65rem;
+  line-height: 1.6;
+  font-weight: 300;
+  color: var(--coffee-darkest);
+  margin-bottom: 2rem;
+}
+
+.about-story-text-en strong {
+  font-weight: 700;
+  color: var(--coffee-warm);
+}
+
+.about-story-text-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 1.65rem;
+  line-height: 1.7;
+  font-weight: 400;
+  color: var(--coffee-medium);
+  margin: 0;
+}
+
+.about-story-text-ar strong {
+  font-weight: 700;
+  color: var(--coffee-darkest);
+}
+
+/* Stats Styling */
+.about-story-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-top: 2rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--coffee-cream-dark);
+}
+
+.about-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.about-stat-num {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--coffee-dark);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.about-stat-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--coffee-warm);
+}
+
+.about-stat-label-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--coffee-medium);
+  margin-top: 0.125rem;
+}
+
+/* CTA Section */
+.about-cta-section {
+  text-align: center;
+  padding: 6rem 5% 2rem;
+}
+
+.about-cta-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-cta-text {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--coffee-medium);
+  margin-bottom: 2rem;
+}
+
+.about-cta-btn {
+  display: inline-block;
+  background-color: var(--coffee-darkest);
+  color: var(--coffee-white);
+  padding: 1.1rem 2.8rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(30, 17, 10, 0.15);
+}
+
+.about-cta-btn:hover {
+  background-color: var(--coffee-warm);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(30, 17, 10, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .about-team-grid {
+    gap: 2rem;
+  }
+  .about-card-body {
+    padding: 2rem;
+  }
+  .about-story-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-breadcrumb {
+    padding: 1.5rem 5%;
+  }
+  .about-hero {
+    padding: 4rem 5% 5rem;
+  }
+  .about-hero-title {
+    font-size: 2.25rem;
+  }
+  .about-hero-title-ar {
+    font-size: 1.65rem;
+  }
+  .about-hero-sub {
+    font-size: 1.1rem;
+  }
+  .about-team-section {
+    margin-top: -2rem;
+  }
+  .about-team-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .about-story-section {
+    padding: 5rem 5%;
+  }
+  .about-story-text-en {
+    font-size: 1.35rem;
+  }
+  .about-story-text-ar {
+    font-size: 1.35rem;
+  }
+  .about-cta-section {
+    padding: 4rem 5% 1rem;
+  }
+}
