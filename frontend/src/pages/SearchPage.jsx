@@ -3,12 +3,14 @@ import { useSearchParams, Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { Search } from 'lucide-react';
 import { productsApi } from '../api';
+import { useLanguage } from "../context/LanguageContext";
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { t, lang, setLang } = useLanguage();
 
   useEffect(() => {
     if (!query) {
@@ -27,31 +29,31 @@ export default function SearchPage() {
   return (
     <main className="search-page" data-testid="search-page">
       <div className="breadcrumb">
-        <Link to="/">Home</Link>
+        <Link to="/">{t('nav_home', 'Home')}</Link>
         <span className="breadcrumb-sep">/</span>
-        <span>Search</span>
+        <span>{t('search', 'Search')}</span>
       </div>
       <div className="search-page-header">
         <Search size={24} />
         <h1>
           {query ? (
-            <>{results.length} result{results.length !== 1 ? 's' : ''} for "<em>{query}</em>"</>
+            <>{t('search_results_for', { count: results.length })} "<em>{query}</em>"</>
           ) : (
-            'Search'
+            t('search', 'Search')
           )}
         </h1>
       </div>
 
       {loading ? (
-        <div style={{ padding: '40px 24px', textAlign: 'center', color: '#6b6b6b' }}>Searching…</div>
+        <div style={{ padding: '40px 24px', textAlign: 'center', color: '#6b6b6b' }}>{t('searching', 'Searching...')}</div>
       ) : results.length > 0 ? (
         <div className="collection-grid">
           {results.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
       ) : query ? (
         <div className="empty-collection">
-          <p>No products match your search for "<strong>{query}</strong>".</p>
-          <Link to="/" className="btn-primary">Back to Home</Link>
+          <p>{t('no_products_match', 'No products match your search for')} "<strong>{query}</strong>".</p>
+          <Link to="/" className="btn-primary">{t('back_to_home', 'Back to Home')}</Link>
         </div>
       ) : null}
     </main>

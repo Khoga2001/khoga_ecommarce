@@ -27,7 +27,10 @@ async def list_products(
     db = get_db()
     query = {"is_active": True}
     if collection:
-        query["collection"] = collection
+        query["$or"] = [
+            {"collection": collection},
+            {"collections": collection}
+        ]
     if is_featured is not None:
         query["is_featured"] = is_featured
     if search:

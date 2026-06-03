@@ -48,6 +48,7 @@ class AddressSchema(BaseModel):
     governorate: str
     country: str = "Egypt"
     postal_code: Optional[str] = None
+    is_hearing_impaired: Optional[bool] = False
 
 
 class UserDB(BaseModel):
@@ -82,6 +83,9 @@ class RegisterRequest(BaseModel):
     password: str
     name: str
     phone: Optional[str] = None
+
+class SetDefaultAddressRequest(BaseModel):
+    index: int
 
 
 class LoginRequest(BaseModel):

@@ -7,6 +7,7 @@ export const authApi = {
   updateProfile: (data) => api.put('/auth/me', data),
   changePassword: (data) => api.post('/auth/change-password', data),
   addAddress: (address) => api.post('/auth/me/addresses', address),
+  setDefaultAddress: (index) => api.post('/auth/me/addresses/default', { index }),
 };
 
 export const productsApi = {

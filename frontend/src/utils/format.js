@@ -3,12 +3,12 @@
  */
 export function formatPrice(amount) {
   const n = Number(amount || 0);
-  return `LE ${n.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}.00 EGP`;
+  return `${n.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}.00 EGP`;
 }
 
 export function formatPriceShort(amount) {
   const n = Number(amount || 0);
-  return `LE ${n.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+  return `${n.toLocaleString('en-EG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 }
 
 /**

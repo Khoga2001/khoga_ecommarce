@@ -8,7 +8,8 @@ from datetime import datetime
 from models import (
     RegisterRequest, LoginRequest, AuthResponse,
     UserPublic, UserDB, UpdateProfileRequest,
-    ChangePasswordRequest, AddressSchema, MessageResponse
+    ChangePasswordRequest, AddressSchema, MessageResponse,
+    SetDefaultAddressRequest
 )
 from utils.security import hash_password, verify_password, create_access_token, get_current_user
 from utils.db import get_db
@@ -113,6 +114,22 @@ async def add_address(address: AddressSchema, current_user: dict = Depends(get_c
     await db.users.update_one(
         {"id": current_user["user_id"]},
         {"$set": {"addresses": addresses, "updated_at": datetime.utcnow()}}
+    )
+    user_doc = await _get_user_by_id(db, current_user["user_id"])
+    return UserPublic(**user_doc)
+
+
+@router.post("/me/addresses/default", response_model=UserPublic)
+async def set_default_address(data: SetDefaultAddressRequest, current_user: dict = Depends(get_current_user)):
+    db = get_db()
+    user_doc = await _get_user_by_id(db, current_user["user_id"])
+    addresses = user_doc.get("addresses", [])
+    if data.index < 0 or data.index >= len(addresses):
+        raise HTTPException(status_code=400, detail="Invalid address index")
+    
+    await db.users.update_one(
+        {"id": current_user["user_id"]},
+        {"$set": {"default_address_idx": data.index, "updated_at": datetime.utcnow()}}
     )
     user_doc = await _get_user_by_id(db, current_user["user_id"])
     return UserPublic(**user_doc)

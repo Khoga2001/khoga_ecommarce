@@ -4,11 +4,13 @@ import { useCart } from '../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice, resolveImage } from '../utils/format';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CartDrawer() {
   const { cart, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, cartCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, lang, setLang } = useLanguage();
 
   if (!isCartOpen) return null;
 
@@ -30,7 +32,7 @@ export default function CartDrawer() {
         <div className="cart-header">
           <h2 className="cart-title">
             <ShoppingBag size={18} />
-            Cart {cartCount > 0 && <span className="cart-count-badge">({cartCount})</span>}
+            {t('cart_title')} {cartCount > 0 && <span className="cart-count-badge">({cartCount})</span>}
           </h2>
           <button className="icon-btn" onClick={() => setIsCartOpen(false)} data-testid="close-cart-btn">
             <X size={20} />
@@ -41,9 +43,9 @@ export default function CartDrawer() {
           {items.length === 0 ? (
             <div className="cart-empty" data-testid="cart-empty">
               <ShoppingBag size={48} strokeWidth={1} />
-              <p>Your cart is empty</p>
+              <p>{t('cart_empty')}</p>
               <button className="btn-primary" onClick={() => setIsCartOpen(false)}>
-                Continue Shopping
+                {t('cart_continue')}
               </button>
             </div>
           ) : (
@@ -69,12 +71,12 @@ export default function CartDrawer() {
                       onClick={() => setIsCartOpen(false)}
                       className="cart-item-title"
                     >
-                      {item.product_title}
+                      {t(item.product_title)}
                     </Link>
                     {Object.entries(item.selected_variants || {}).length > 0 && (
                       <div className="cart-item-variants">
                         {Object.entries(item.selected_variants).map(([k, v]) => (
-                          <span key={k}>{k}: {v}</span>
+                          <span key={k}>{t(k)}: {t(v)}</span>
                         ))}
                       </div>
                     )}
@@ -117,7 +119,7 @@ export default function CartDrawer() {
         {items.length > 0 && (
           <div className="cart-footer">
             <div className="cart-subtotal">
-              <span>Subtotal</span>
+              <span>{t('cart_subtotal')}</span>
               <span>{formatPrice(cart.subtotal || 0)}</span>
             </div>
             {cart.discount > 0 && (
@@ -126,19 +128,19 @@ export default function CartDrawer() {
                 <span>− {formatPrice(cart.discount)}</span>
               </div>
             )}
-            <p className="cart-note">Shipping and taxes calculated at checkout.</p>
+            <p className="cart-note">{t('cart_taxes_shipping')}</p>
             <button
               className="btn-primary cart-checkout-btn"
               onClick={goToCheckout}
               data-testid="proceed-checkout-btn"
             >
-              Proceed to Checkout
+              {t('cart_checkout')}
             </button>
             <button
               className="btn-secondary cart-continue-btn"
               onClick={() => setIsCartOpen(false)}
             >
-              Continue Shopping
+              {t('cart_continue')}
             </button>
           </div>
         )}

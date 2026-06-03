@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { ordersApi } from '../api';
 import { formatPrice, resolveImage } from '../utils/format';
 import { toast } from 'sonner';
+import { useLanguage } from "../context/LanguageContext";
 
 const GOVERNORATES = [
   'Cairo', 'Giza', 'Alexandria', 'Qalyubia', 'Sharqia', 'Dakahlia', 'Beheira',
@@ -17,6 +18,7 @@ export default function CheckoutPage() {
   const { cart, fetchCart, applyCoupon, removeCoupon } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, lang, setLang } = useLanguage();
 
   const items = cart.items || [];
   const [submitting, setSubmitting] = useState(false);
@@ -89,8 +91,8 @@ export default function CheckoutPage() {
     return (
       <main className="checkout-page" data-testid="checkout-empty">
         <div className="empty-collection">
-          <h2>Your cart is empty</h2>
-          <Link to="/" className="btn-primary">Continue Shopping</Link>
+          <h2>{t('cart_empty')}</h2>
+          <Link to="/" className="btn-primary">{t('cart_continue')}</Link>
         </div>
       </main>
     );
@@ -99,65 +101,65 @@ export default function CheckoutPage() {
   return (
     <main className="checkout-page" data-testid="checkout-page">
       <div className="breadcrumb">
-        <Link to="/">Home</Link>
+        <Link to="/">{t('nav_home', 'Home')}</Link>
         <span className="breadcrumb-sep">/</span>
-        <span>Checkout</span>
+        <span>{t('cart_checkout')}</span>
       </div>
-      <h1 className="account-title">Checkout</h1>
+      <h1 className="account-title">{t('cart_checkout')}</h1>
 
       <form className="checkout-grid" onSubmit={onSubmit}>
         <div className="checkout-form-box">
-          <h3>Shipping Information</h3>
+          <h3>{t('shipping_info', 'Shipping Information')}</h3>
           <div className="form-grid">
-            <label className="auth-label">Full Name
+            <label className="auth-label">{t('full_name')}
               <input className="auth-input" required value={form.full_name} onChange={e => update('full_name', e.target.value)} data-testid="checkout-name" />
             </label>
-            <label className="auth-label">Phone
+            <label className="auth-label">{t('phone')}
               <input className="auth-input" required value={form.phone} onChange={e => update('phone', e.target.value)} data-testid="checkout-phone" />
             </label>
-            <label className="auth-label" style={{ gridColumn: '1 / -1' }}>Address Line 1
+            <label className="auth-label" style={{ gridColumn: '1 / -1' }}>{t('address_line1', 'Address Line 1')}
               <input className="auth-input" required value={form.address_line1} onChange={e => update('address_line1', e.target.value)} data-testid="checkout-address1" />
             </label>
-            <label className="auth-label" style={{ gridColumn: '1 / -1' }}>Address Line 2 (optional)
+            <label className="auth-label" style={{ gridColumn: '1 / -1' }}>{t('address_line2', 'Address Line 2 (optional)')}
               <input className="auth-input" value={form.address_line2} onChange={e => update('address_line2', e.target.value)} />
             </label>
-            <label className="auth-label">City
+            <label className="auth-label">{t('city')}
               <input className="auth-input" required value={form.city} onChange={e => update('city', e.target.value)} data-testid="checkout-city" />
             </label>
-            <label className="auth-label">Governorate
+            <label className="auth-label">{t('governorate')}
               <select className="auth-input" value={form.governorate} onChange={e => update('governorate', e.target.value)} data-testid="checkout-gov">
                 {GOVERNORATES.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
             </label>
-            <label className="auth-label">Country
+            <label className="auth-label">{t('country', 'Country')}
               <input className="auth-input" required value={form.country} onChange={e => update('country', e.target.value)} />
             </label>
-            <label className="auth-label">Postal Code
+            <label className="auth-label">{t('postal_code', 'Postal Code')}
               <input className="auth-input" value={form.postal_code} onChange={e => update('postal_code', e.target.value)} />
             </label>
-            <label className="auth-label" style={{ gridColumn: '1 / -1' }}>Order Notes (optional)
+            <label className="auth-label" style={{ gridColumn: '1 / -1' }}>{t('order_notes', 'Order Notes (optional)')}
               <textarea className="auth-input" rows={3} value={form.notes} onChange={e => update('notes', e.target.value)} />
             </label>
           </div>
 
-          <h3 style={{ marginTop: 32 }}>Payment</h3>
+          <h3 style={{ marginTop: 32 }}>{t('payment', 'Payment')}</h3>
           <label className="payment-option">
             <input type="radio" name="payment" value="cash_on_delivery" checked={form.payment_method === 'cash_on_delivery'} onChange={() => update('payment_method', 'cash_on_delivery')} />
-            <span><strong>Cash on Delivery</strong> — Pay when your order arrives</span>
+            <span><strong>{t('cod', 'Cash on Delivery')}</strong> — {t('cod_desc', 'Pay when your order arrives')}</span>
           </label>
         </div>
 
         <aside className="checkout-summary">
-          <h3>Order Summary</h3>
+          <h3>{t('order_summary', 'Order Summary')}</h3>
           <div className="checkout-items">
             {items.map(it => (
               <div key={it.item_id} className="checkout-item">
                 {it.product_image && <img src={resolveImage(it.product_image)} alt={it.product_title} />}
                 <div>
-                  <p className="checkout-item-title">{it.product_title}</p>
-                  <p className="checkout-item-meta">Qty: {it.quantity}</p>
+                  <p className="checkout-item-title">{t(it.product_title)}</p>
+                  <p className="checkout-item-meta">{t('quantity')}: {it.quantity}</p>
                   {Object.entries(it.selected_variants || {}).map(([k, v]) => (
-                    <p key={k} className="checkout-item-meta">{k}: {v}</p>
+                    <p key={k} className="checkout-item-meta">{t(k)}: {t(v)}</p>
                   ))}
                 </div>
                 <span className="checkout-item-price">{formatPrice(it.price * it.quantity)}</span>
@@ -168,37 +170,37 @@ export default function CheckoutPage() {
           <div className="checkout-coupon">
             {cart.coupon_code ? (
               <div className="coupon-applied">
-                <span>Coupon: <strong>{cart.coupon_code}</strong></span>
-                <button type="button" onClick={onRemoveCoupon} className="link-btn">Remove</button>
+                <span>{t('coupon', 'Coupon')}: <strong>{cart.coupon_code}</strong></span>
+                <button type="button" onClick={onRemoveCoupon} className="link-btn">{t('remove', 'Remove')}</button>
               </div>
             ) : (
               <div className="coupon-input-row">
                 <input
                   type="text"
-                  placeholder="Coupon code"
+                  placeholder={t('coupon_code', 'Coupon code')}
                   value={coupon}
                   onChange={e => setCoupon(e.target.value.toUpperCase())}
                   className="auth-input"
                   data-testid="coupon-input"
                 />
                 <button type="button" className="btn-outline" onClick={onApplyCoupon} disabled={applyingCoupon} data-testid="apply-coupon-btn">
-                  {applyingCoupon ? '…' : 'Apply'}
+                  {applyingCoupon ? '…' : t('apply', 'Apply')}
                 </button>
               </div>
             )}
           </div>
 
           <div className="checkout-totals">
-            <div className="order-sum-row"><span>Subtotal</span><span>{formatPrice(cart.subtotal || 0)}</span></div>
-            <div className="order-sum-row"><span>Shipping</span><span>{(cart.shipping_cost || 0) > 0 ? formatPrice(cart.shipping_cost) : 'Free'}</span></div>
+            <div className="order-sum-row"><span>{t('cart_subtotal')}</span><span>{formatPrice(cart.subtotal || 0)}</span></div>
+            <div className="order-sum-row"><span>{t('shipping', 'Shipping')}</span><span>{(cart.shipping_cost || 0) > 0 ? formatPrice(cart.shipping_cost) : t('free', 'Free')}</span></div>
             {cart.discount > 0 && (
-              <div className="order-sum-row" style={{ color: '#a85a00' }}><span>Discount</span><span>− {formatPrice(cart.discount)}</span></div>
+              <div className="order-sum-row" style={{ color: '#a85a00' }}><span>{t('discount', 'Discount')}</span><span>− {formatPrice(cart.discount)}</span></div>
             )}
-            <div className="order-sum-row order-total"><span>Total</span><span>{formatPrice(cart.total || 0)}</span></div>
+            <div className="order-sum-row order-total"><span>{t('total', 'Total')}</span><span>{formatPrice(cart.total || 0)}</span></div>
           </div>
 
           <button type="submit" className="btn-primary checkout-submit" disabled={submitting} data-testid="place-order-btn">
-            {submitting ? 'Placing order…' : 'Place Order'}
+            {submitting ? t('loading') : t('place_order', 'Place Order')}
           </button>
         </aside>
       </form>

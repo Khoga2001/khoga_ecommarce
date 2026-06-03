@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { useLanguage } from "../context/LanguageContext";
 
 export default function LoginPage() {
   const { login, user } = useAuth();
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const { t, lang, setLang } = useLanguage();
 
   if (user) {
     navigate(redirectTo, { replace: true });
@@ -34,10 +36,10 @@ export default function LoginPage() {
   return (
     <main className="auth-page" data-testid="login-page">
       <div className="auth-card">
-        <h1 className="auth-title">Login</h1>
+        <h1 className="auth-title">{t('nav_login')}</h1>
         <form onSubmit={onSubmit} className="auth-form">
           <label className="auth-label">
-            Email
+            {t('email')}
             <input
               type="email"
               required
@@ -49,7 +51,7 @@ export default function LoginPage() {
             />
           </label>
           <label className="auth-label">
-            Password
+            {t('password')}
             <input
               type="password"
               required
@@ -61,11 +63,11 @@ export default function LoginPage() {
             />
           </label>
           <button type="submit" className="btn-primary auth-submit" disabled={submitting} data-testid="login-submit">
-            {submitting ? 'Signing in…' : 'Sign In'}
+            {submitting ? t('loading') : t('login_btn')}
           </button>
         </form>
         <p className="auth-alt">
-          New to KHOGA? <Link to="/register" state={{ from: redirectTo }}>Create an account</Link>
+          {t('no_account')} <Link to="/register" state={{ from: redirectTo }}>{t('register_btn')}</Link>
         </p>
       </div>
     </main>
