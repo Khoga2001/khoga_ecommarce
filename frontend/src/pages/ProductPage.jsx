@@ -182,9 +182,13 @@ export default function ProductPage() {
           <div
             className={`gallery-main scroll-reveal ${galleryRevealed ? 'revealed' : ''} ${galleryZoom ? 'is-zoomed' : ''}`}
             onClick={() => setLightboxOpen(true)}
-            onMouseEnter={() => setGalleryZoom(true)}
+            onMouseEnter={() => {
+              if (isSpecialMinimalProduct) setGalleryZoom(true);
+            }}
             onMouseLeave={() => setGalleryZoom(false)}
-            onMouseMove={handleGalleryMouseMove}
+            onMouseMove={(e) => {
+              if (isSpecialMinimalProduct) handleGalleryMouseMove(e);
+            }}
             style={galleryZoom ? {
               '--zoom-x': `${galleryZoomPos.x}%`,
               '--zoom-y': `${galleryZoomPos.y}%`,

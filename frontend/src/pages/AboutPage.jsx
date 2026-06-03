@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './AboutPage.css';
 
 /* ─── Team data ─────────────────────────────────────────────────────────── */
@@ -36,7 +37,7 @@ export default function AboutPage() {
 
       {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
       <nav className="about-breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a>
+        <Link to="/">Home</Link>
         <span className="about-breadcrumb-sep">›</span>
         <span>About Us</span>
       </nav>
@@ -161,9 +162,9 @@ export default function AboutPage() {
           <p className="about-cta-text">
             Taste the story — explore our full collection.
           </p>
-          <a href="/collections/bundles" className="about-cta-btn">
+          <Link to="/collections/bundles" className="about-cta-btn">
             Shop KHOGA
-          </a>
+          </Link>
         </div>
       </section>
 
