@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khoga Coffee — System Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Cairo:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Slide Container */
+  .slides { width: 100%; height: 100vh; position: relative; }
+
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    padding: 48px 64px;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 0; left: 0;
+    background: #111;
+    animation: fadeIn 0.4s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Title Slide */
+  .slide-title {
+    background: linear-gradient(135deg, #1a0a00 0%, #2d1500 50%, #1a0a00 100%);
+    align-items: center;
+    text-align: center;
+  }
+  .slide-title .logo-badge {
+    width: 80px; height: 80px; border-radius: 20px;
+    background: linear-gradient(135deg, #c8860a, #e8a020);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(200,134,10,0.4);
+  }
+  .slide-title h1 {
+    font-size: 48px; font-weight: 800;
+    background: linear-gradient(135deg, #e8a020, #c8860a);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .slide-title h2 {
+    font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.6);
+    margin-bottom: 32px;
+  }
+  .slide-title .meta {
+    display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+  }
+  .slide-title .meta span {
+    background: rgba(200,134,10,0.15);
+    border: 1px solid rgba(200,134,10,0.3);
+    padding: 8px 20px; border-radius: 999px;
+    font-size: 13px; color: #e8a020;
+  }
+
+  /* Section Header */
+  .slide-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 36px; padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .slide-header .num {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, #c8860a, #e8a020);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: #fff;
+    flex-shrink: 0;
+  }
+  .slide-header h2 { font-size: 26px; font-weight: 700; }
+  .slide-header p  { font-size: 14px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+  /* Architecture Diagram */
+  .arch-diagram {
+    display: flex; gap: 0; align-items: stretch;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; overflow: hidden;
+    flex: 1;
+  }
+  .arch-layer {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; padding: 24px 16px; gap: 12px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .arch-layer:last-child { border-right: none; }
+  .arch-layer-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+    margin-bottom: 8px;
+  }
+  .arch-box {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 10px 14px;
+    text-align: center; width: 100%;
+    font-size: 12px; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .arch-box.primary {
+    background: rgba(200,134,10,0.15);
+    border-color: rgba(200,134,10,0.4);
+    color: #e8a020;
+  }
+  .arch-box .sub { font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.4); margin-top: 3px; }
+  .arch-arrow {
+    position: absolute; right: -14px; top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    background: rgba(200,134,10,0.2);
+    border: 1px solid rgba(200,134,10,0.4);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; z-index: 2;
+  }
+  .arch-layer:last-child .arch-arrow { display: none; }
+
+  /* ERD Diagram */
+  .erd-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px; flex: 1;
+  }
+  .erd-entity {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; overflow: hidden;
+  }
+  .erd-entity-header {
+    background: rgba(200,134,10,0.15);
+    border-bottom: 1px solid rgba(200,134,10,0.2);
+    padding: 10px 14px;
+    font-weight: 700; font-size: 13px; color: #e8a020;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .erd-field {
+    padding: 6px 14px;
+    font-size: 11px; color: rgba(255,255,255,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .erd-field:last-child { border-bottom: none; }
+  .erd-badge {
+    font-size: 9px; padding: 1px 6px; border-radius: 4px;
+    font-weight: 600;
+  }
+  .pk { background: rgba(200,134,10,0.3); color: #e8a020; }
+  .fk { background: rgba(59,130,246,0.3); color: #60a5fa; }
+  .erd-relation {
+    grid-column: 1 / -1;
+    display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+    padding: 8px 0;
+  }
+  .rel-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; color: rgba(255,255,255,0.5);
+  }
+  .rel-line { height: 2px; width: 32px; background: rgba(200,134,10,0.5); border-radius: 2px; position: relative; }
+
+  /* Use Case */
+  .usecase-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; flex: 1;
+  }
+  .actor-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; overflow: hidden;
+  }
+  .actor-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .actor-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .actor-header h3 { font-size: 14px; font-weight: 700; }
+  .actor-header p  { font-size: 10px; color: rgba(255,255,255,0.4); }
+  .actor-actions { padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .action-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11.5px; color: rgba(255,255,255,0.65);
+    padding: 5px 8px; border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+  }
+  .action-item::before { content: '→'; color: rgba(200,134,10,0.7); font-size: 10px; }
+
+  /* Stack Table */
+  .stack-table { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .stack-row {
+    display: grid; grid-template-columns: 140px 1fr 1fr;
+    gap: 12px; align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 14px 20px;
+  }
+  .stack-row.header {
+    background: rgba(200,134,10,0.08);
+    border-color: rgba(200,134,10,0.2);
+  }
+  .stack-row.header span { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+  .stack-layer { font-weight: 700; font-size: 14px; color: #e8a020; }
+  .stack-tech { font-size: 13px; color: rgba(255,255,255,0.9); }
+  .stack-role { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+  /* Component Diagram */
+  .component-tree {
+    flex: 1; display: flex; gap: 20px;
+  }
+  .comp-section {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 20px 16px;
+  }
+  .comp-section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: rgba(200,134,10,0.7);
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .comp-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 8px; margin-bottom: 6px;
+    background: rgba(255,255,255,0.04);
+    font-size: 12px; color: rgba(255,255,255,0.75);
+  }
+  .comp-item .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #c8860a; flex-shrink: 0;
+  }
+  .comp-item .comp-sub {
+    font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 1px;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 16px;
+    background: rgba(20,20,20,0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px; padding: 10px 24px;
+    backdrop-filter: blur(20px);
+    z-index: 100;
+  }
+  .nav button {
+    background: none; border: none; color: rgba(255,255,255,0.6);
+    cursor: pointer; font-size: 18px; padding: 4px 8px;
+    transition: color 0.2s;
+  }
+  .nav button:hover { color: #e8a020; }
+  .nav-counter { font-size: 13px; color: rgba(255,255,255,0.5); min-width: 60px; text-align: center; }
+  .nav-dots { display: flex; gap: 6px; }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-dot.active { background: #e8a020; width: 18px; border-radius: 3px; }
+
+  /* Slide number badge */
+  .slide-num {
+    position: absolute; top: 28px; right: 48px;
+    font-size: 12px; color: rgba(255,255,255,0.2);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide slide-title active">
+    <div class="logo-badge">☕</div>
+    <h1>Khoga Coffee Platform</h1>
+    <h2>System Architecture & Technical Design</h2>
+    <div class="meta">
+      <span>Sherif Khoga — 210209461</span>
+      <span>Software Engineering</span>
+      <span>Üsküdar University 2025–2026</span>
+    </div>
+    <div class="slide-num">1 / 6</div>
+  </div>
+
+  <!-- SLIDE 2: System Architecture -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="num">1</div>
+      <div>
+        <h2>System Architecture</h2>
+        <p>كيف تتواصل طبقات النظام مع بعضها</p>
+      </div>
+    </div>
+    <div class="arch-diagram">
+      <div class="arch-layer">
+        <div class="arch-layer-title">Client</div>
+        <div class="arch-box primary">🌐 Browser<div class="sub">المستخدم</div></div>
+        <div class="arch-box">HTTP Requests</div>
+        <div class="arch-box">React Router<div class="sub">التنقل بين الصفحات</div></div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-title">Frontend — Port 3000</div>
+        <div class="arch-box primary">⚛️ React.js<div class="sub">واجهة المستخدم</div></div>
+        <div class="arch-box">Context API<div class="sub">Cart / Auth / Language</div></div>
+        <div class="arch-box">i18next<div class="sub">عربي / English</div></div>
+        <div class="arch-box">setupProxy.js<div class="sub">ربط مع Backend</div></div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-title">Backend — Port 8001</div>
+        <div class="arch-box primary">🐍 FastAPI<div class="sub">REST API</div></div>
+        <div class="arch-box">JWT Auth<div class="sub">تسجيل دخول آمن</div></div>
+        <div class="arch-box">/products<div class="sub">المنتجات</div></div>
+        <div class="arch-box">/orders<div class="sub">الطلبات</div></div>
+        <div class="arch-box">/users<div class="sub">المستخدمين</div></div>
+        <div class="arch-arrow">→</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-title">Database</div>
+        <div class="arch-box primary">🍃 MongoDB<div class="sub">قاعدة البيانات</div></div>
+        <div class="arch-box">Products Collection</div>
+        <div class="arch-box">Users Collection</div>
+        <div class="arch-box">Orders Collection</div>
+        <div class="arch-box">Reviews Collection</div>
+      </div>
+    </div>
+    <div class="slide-num">2 / 6</div>
+  </div>
+
+  <!-- SLIDE 3: ERD -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="num">2</div>
+      <div>
+        <h2>Entity Relationship Diagram (ERD)</h2>
+        <p>جداول قاعدة البيانات وعلاقاتها</p>
+      </div>
+    </div>
+    <div class="erd-grid">
+      <div class="erd-entity">
+        <div class="erd-entity-header">👤 USER</div>
+        <div class="erd-field">_id <span class="erd-badge pk">PK</span></div>
+        <div class="erd-field">name</div>
+        <div class="erd-field">email</div>
+        <div class="erd-field">password_hash</div>
+        <div class="erd-field">role <span style="font-size:10px;color:#999">user / admin</span></div>
+      </div>
+      <div class="erd-entity">
+        <div class="erd-entity-header">☕ PRODUCT</div>
+        <div class="erd-field">_id <span class="erd-badge pk">PK</span></div>
+        <div class="erd-field">name_en / name_ar</div>
+        <div class="erd-field">price</div>
+        <div class="erd-field">category</div>
+        <div class="erd-field">stock / images</div>
+      </div>
+      <div class="erd-entity">
+        <div class="erd-entity-header">📦 ORDER</div>
+        <div class="erd-field">_id <span class="erd-badge pk">PK</span></div>
+        <div class="erd-field">user_id <span class="erd-badge fk">FK</span></div>
+        <div class="erd-field">items [ ]</div>
+        <div class="erd-field">total_price</div>
+        <div class="erd-field">status / payment</div>
+      </div>
+      <div class="erd-entity">
+        <div class="erd-entity-header">⭐ REVIEW</div>
+        <div class="erd-field">_id <span class="erd-badge pk">PK</span></div>
+        <div class="erd-field">product_id <span class="erd-badge fk">FK</span></div>
+        <div class="erd-field">user_id <span class="erd-badge fk">FK</span></div>
+        <div class="erd-field">rating (1–5)</div>
+        <div class="erd-field">comment</div>
+      </div>
+      <div class="erd-entity">
+        <div class="erd-entity-header">🛒 CART</div>
+        <div class="erd-field">user_id <span class="erd-badge fk">FK</span></div>
+        <div class="erd-field">items [ ]</div>
+        <div class="erd-field">total</div>
+      </div>
+      <div class="erd-entity" style="background:rgba(200,134,10,0.05);border-color:rgba(200,134,10,0.2)">
+        <div class="erd-entity-header" style="color:rgba(255,255,255,0.5)">🔗 Relations</div>
+        <div class="erd-field" style="font-size:11px">User → (1:N) → Orders</div>
+        <div class="erd-field" style="font-size:11px">User → (1:N) → Reviews</div>
+        <div class="erd-field" style="font-size:11px">Product → (1:N) → Reviews</div>
+        <div class="erd-field" style="font-size:11px">Order → (1:N) → Items</div>
+      </div>
+    </div>
+    <div class="slide-num">3 / 6</div>
+  </div>
+
+  <!-- SLIDE 4: Use Case -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="num">3</div>
+      <div>
+        <h2>Use Case Diagram</h2>
+        <p>مين يعمل إيه في النظام؟</p>
+      </div>
+    </div>
+    <div class="usecase-grid">
+      <div class="actor-card">
+        <div class="actor-header">
+          <div class="actor-icon" style="background:rgba(255,255,255,0.08)">👤</div>
+          <div><h3>Guest</h3><p>الزائر غير المسجّل</p></div>
+        </div>
+        <div class="actor-actions">
+          <div class="action-item">تصفّح المنتجات</div>
+          <div class="action-item">البحث عن منتج</div>
+          <div class="action-item">عرض تفاصيل منتج</div>
+          <div class="action-item">تغيير اللغة ع/EN</div>
+          <div class="action-item">التسجيل / الدخول</div>
+        </div>
+      </div>
+      <div class="actor-card" style="border-color:rgba(200,134,10,0.25)">
+        <div class="actor-header" style="background:rgba(200,134,10,0.08)">
+          <div class="actor-icon" style="background:rgba(200,134,10,0.2)">🛒</div>
+          <div><h3>Customer</h3><p>الزبون المسجّل</p></div>
+        </div>
+        <div class="actor-actions">
+          <div class="action-item">إضافة للسلة</div>
+          <div class="action-item">إتمام الشراء</div>
+          <div class="action-item">الدفع (COD / Visa)</div>
+          <div class="action-item">تتبّع الطلبات</div>
+          <div class="action-item">كتابة تقييم</div>
+          <div class="action-item">تعديل بيانات الحساب</div>
+        </div>
+      </div>
+      <div class="actor-card" style="border-color:rgba(239,68,68,0.25)">
+        <div class="actor-header" style="background:rgba(239,68,68,0.08)">
+          <div class="actor-icon" style="background:rgba(239,68,68,0.2)">👑</div>
+          <div><h3>Admin</h3><p>مدير النظام</p></div>
+        </div>
+        <div class="actor-actions">
+          <div class="action-item">إضافة / تعديل منتجات</div>
+          <div class="action-item">عرض كل الطلبات</div>
+          <div class="action-item">تغيير حالة الطلب</div>
+          <div class="action-item">إدارة المستخدمين</div>
+          <div class="action-item">الإحصائيات والتقارير</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">4 / 6</div>
+  </div>
+
+  <!-- SLIDE 5: Tech Stack -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="num">4</div>
+      <div>
+        <h2>Technology Stack</h2>
+        <p>التقنيات المستخدمة في المشروع</p>
+      </div>
+    </div>
+    <div class="stack-table">
+      <div class="stack-row header">
+        <span>Layer</span><span>Technology</span><span>Purpose</span>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">🖥️ Frontend</div>
+        <div class="stack-tech">React.js + React Router</div>
+        <div class="stack-role">واجهة المستخدم والتنقل بين الصفحات</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">🌐 i18n</div>
+        <div class="stack-tech">i18next</div>
+        <div class="stack-role">ترجمة عربي / إنجليزي مع دعم RTL</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">🐍 Backend</div>
+        <div class="stack-tech">FastAPI (Python)</div>
+        <div class="stack-role">REST API — منطق الأعمال وإدارة البيانات</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">🔐 Auth</div>
+        <div class="stack-tech">JWT Tokens</div>
+        <div class="stack-role">تسجيل دخول آمن وتمييز صلاحيات المستخدمين</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">🍃 Database</div>
+        <div class="stack-tech">MongoDB (NoSQL)</div>
+        <div class="stack-role">تخزين المنتجات والطلبات والمستخدمين</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer">🔗 Proxy</div>
+        <div class="stack-tech">setupProxy.js</div>
+        <div class="stack-role">ربط Frontend (3000) بـ Backend (8001)</div>
+      </div>
+    </div>
+    <div class="slide-num">5 / 6</div>
+  </div>
+
+  <!-- SLIDE 6: Summary -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="num">5</div>
+      <div>
+        <h2>Research Hypotheses — Implementation Map</h2>
+        <p>ربط الفرضيات بالتطبيق الفعلي</p>
+      </div>
+    </div>
+    <div class="stack-table">
+      <div class="stack-row header">
+        <span>Hypothesis</span><span>Feature</span><span>Status</span>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer" style="font-size:12px">H1: Transparency → Purchase</div>
+        <div class="stack-tech" style="font-size:12px">صفحات تفاصيل المنتج</div>
+        <div style="color:#22c55e;font-weight:700">✅ Implemented</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer" style="font-size:12px">H2: E-Service → Satisfaction</div>
+        <div class="stack-tech" style="font-size:12px">Checkout + Orders + Account</div>
+        <div style="color:#22c55e;font-weight:700">✅ Implemented</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer" style="font-size:12px">H3: Education → Trust</div>
+        <div class="stack-tech" style="font-size:12px">About Page + Product Details</div>
+        <div style="color:#f59e0b;font-weight:700">⚠️ Partial</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer" style="font-size:12px">H4: Trust → Loyalty</div>
+        <div class="stack-tech" style="font-size:12px">Reviews + User Account System</div>
+        <div style="color:#22c55e;font-weight:700">✅ Implemented</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer" style="font-size:12px">H5: Engagement → Purchase</div>
+        <div class="stack-tech" style="font-size:12px">Reviews Section + WhatsApp</div>
+        <div style="color:#22c55e;font-weight:700">✅ Implemented</div>
+      </div>
+      <div class="stack-row">
+        <div class="stack-layer" style="font-size:12px">H6: Platform Superior</div>
+        <div class="stack-tech" style="font-size:12px">COD + Bilingual + Admin Panel</div>
+        <div style="color:#22c55e;font-weight:700">✅ Implemented</div>
+      </div>
+    </div>
+    <div class="slide-num">6 / 6</div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="changeSlide(-1)">◀</button>
+  <div class="nav-dots" id="dots"></div>
+  <span class="nav-counter" id="counter">1 / 6</span>
+  <button onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dotsEl = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+</script>
+</body>
+</html>
